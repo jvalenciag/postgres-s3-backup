@@ -30,7 +30,10 @@ else
 fi
 
 echo "Uploading backup to $S3_BUCKET..."
-aws $aws_args s3 cp "$local_file" "$s3_uri"
+# Custom-format dumps and binary GPG files have no reliable MIME mapping.
+# Set the object type so S3 does not store the upload without one.
+aws $aws_args s3 cp "$local_file" "$s3_uri" \
+  --content-type "application/octet-stream"
 rm "$local_file"
 
 echo "Backup complete."
